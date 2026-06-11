@@ -7,6 +7,7 @@
 | 日期 | 标题 | 路径 |
 |---|---|---|
 | 2026-06-11 | 数据产品：从看见数据到驱动决策 | [posts/2026-06-data-product/](./posts/2026-06-data-product/) |
+| 2026-06-11 | 数据仓库：从 T+1 到实时湖仓的演进与实践 | [posts/2026-06-data-warehouse/](./posts/2026-06-data-warehouse/) |
 
 ## 约定
 
