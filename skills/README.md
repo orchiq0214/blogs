@@ -23,8 +23,8 @@ EOF
 |------|------|------|
 | `search` | 联网搜索 | `skills search AI agent 2025` |
 | `readimg` | 图片文字识别 | `skills readimg screenshot.png` |
-| `genimg` | 图片生成（开发中） | `skills genimg "cat wearing suit"` |
-| `jd` | JD 分析（开发中） | `skills jd --file job.txt` |
+| `genimg` | 图片生成 | `skills genimg "cat wearing suit"` |
+| `jd` | JD 分析 | `skills jd --file job.txt` |
 
 ## 依赖
 
