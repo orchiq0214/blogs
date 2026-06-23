@@ -1,0 +1,82 @@
+#!/usr/bin/env python3
+"""
+skills — 跨 agent 工具包 CLI
+
+Usage:
+    skills search <query>         联网搜索
+    skills readimg <image_path>   图片文字识别
+    skills genimg <prompt>        图片生成（开发中）
+    skills jd <text>              JD 分析（开发中）
+"""
+
+import argparse
+import sys
+import os
+
+# 把 lib 目录加入路径
+SKILLS_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, os.path.join(SKILLS_DIR, "lib"))
+
+
+def main():
+    parser = argparse.ArgumentParser(
+        prog="skills",
+        description="跨 agent 工具包 — 搜索、图片理解、图片生成、JD 分析",
+    )
+    parser.add_argument("--version", action="version", version="skills 0.1.0")
+
+    subparsers = parser.add_subparsers(dest="command", help="子命令")
+
+    # search
+    p_search = subparsers.add_parser("search", help="联网搜索")
+    p_search.add_argument("query", nargs="+", help="搜索关键词")
+
+    # readimg
+    p_readimg = subparsers.add_parser("readimg", help="图片文字识别")
+    p_readimg.add_argument("image_path", help="图片文件路径")
+
+    # genimg
+    p_genimg = subparsers.add_parser("genimg", help="图片生成")
+    p_genimg.add_argument("prompt", nargs="+", help="图片描述")
+    p_genimg.add_argument("--output", "-o", default="", help="输出路径")
+
+    # jd
+    p_jd = subparsers.add_parser("jd", help="JD 分析")
+    p_jd.add_argument("--file", "-f", help="JD 文件路径")
+    p_jd.add_argument("--text", "-t", help="JD 文本内容")
+
+    args = parser.parse_args()
+
+    if args.command == "search":
+        from search import run_search
+        query = " ".join(args.query)
+        run_search(query)
+
+    elif args.command == "readimg":
+        from readimg import run_readimg
+        run_readimg(args.image_path)
+
+    elif args.command == "genimg":
+        from genimg import run_genimg
+        prompt = " ".join(args.prompt)
+        run_genimg(prompt, args.output)
+
+    elif args.command == "jd":
+        from jd_analyze import run_jd
+        if args.file:
+            with open(args.file) as f:
+                text = f.read()
+        elif args.text:
+            text = args.text
+        else:
+            print("请提供 JD 内容：--file 或 --text")
+            sys.exit(1)
+        run_jd(text)
+
+    else:
+        parser.print_help()
+        sys.exit(1)
+
+
+if __name__ == "__main__":
+    main()
