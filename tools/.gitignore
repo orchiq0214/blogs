@@ -1,0 +1,25 @@
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+*~
+
+# Logs (runtime only, not source)
+*.log
+watcher_log.txt
+headphone_log.txt
+
+# AHK v2 extracted runtime (don't commit binaries, install separately)
+# But these DO live in C:\Users\1\Tools\AutoHotkey\ - not in this repo
+AutoHotkey*.exe
+AutoHotkey.chm
+license.txt
+
+# Runtime artifacts
+*.zip
+!tests/*.html
+
+# PowerShell artifacts
+*.tmp
