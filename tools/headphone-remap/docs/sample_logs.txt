@@ -45,14 +45,14 @@ vkB3::Send "{Enter}"           # ← 单独这个不生效
 # 启动时报错：
 # Error: Invalid key name.
 # Text:    Media_Select
-# File:    C:\Users\1\Tools\AutoHotkey\headphone_remap.ahk
+# File:    <install-dir>\headphone_remap.ahk
 #
 # 解决：删掉 Media_Select:: 这个 hotkey
 
 ================================================================================
 故障案例 3：PowerShell 解析失败（中文在 -Action 块里）
 ================================================================================
-# C:\Users\1\Tools\AutoHotkey\headphone_watcher.ps1:58 字符: 17
+# <install-dir>\headphone_watcher.ps1:58 字符: 17
 # +     Write-Log "[PnP] 音频端点创建: $name"
 # +                 ~
 # 表达式中缺少 "}"

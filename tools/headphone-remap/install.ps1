@@ -1,16 +1,17 @@
 # =========================================================================
 # headphone-remap 一键安装 / 卸载
 # 用法（新机器上）：
-#   git clone <repo> C:\Users\1\myagents\headphone-remap
-#   cd C:\Users\1\myagents\headphone-remap
+#   git clone <repo> somewhere
+#   cd somewhere/tools/headphone-remap
 #   powershell -ExecutionPolicy Bypass -File install.ps1
 #
-# 卸载：
-#   powershell -ExecutionPolicy Bypass -File install.ps1 -Uninstall
+# 自定义安装路径：  powershell -File install.ps1 -InstallDir 'D:\MyTools\AHK'
+# 跳过自启：        powershell -File install.ps1 -SkipAutostart
+# 卸载：            powershell -File install.ps1 -Uninstall
 # =========================================================================
 
 param(
-    [string]$InstallDir = "C:\Users\1\Tools\AutoHotkey",
+    [string]$InstallDir = (Join-Path $env:LOCALAPPDATA "Tools\AutoHotkey"),
     [switch]$Uninstall,
     [switch]$SkipAutostart,
     [switch]$OpenTestPage
@@ -74,16 +75,10 @@ Write-Step "Copying scripts..."
 Copy-Item "$ScriptRoot\scripts\headphone_remap.ahk" $InstallDir -Force
 Copy-Item "$ScriptRoot\scripts\headphone_watcher.ps1" $InstallDir -Force
 
-# 4. Patch the watcher's hardcoded paths to match $InstallDir
-$watcherPath = Join-Path $InstallDir "headphone_watcher.ps1"
-$content = Get-Content $watcherPath -Raw
-$unixStyle = $InstallDir -replace '\\', '/'
-$content = $content -replace 'C:\\Users\\1\\Tools\\AutoHotkey', $InstallDir
-$content = $content -replace 'C:/Users/1/Tools/AutoHotkey', $unixStyle
-[System.IO.File]::WriteAllText($watcherPath, $content, (New-Object System.Text.UTF8Encoding($true)))
-Write-Step "Patched paths in watcher"
+# 4. (Watcher uses $PSScriptRoot relative paths — no patching needed)
 
 # 5. Autostart
+$watcherPath = Join-Path $InstallDir "headphone_watcher.ps1"
 if (-not $SkipAutostart) {
     $startup = [Environment]::GetFolderPath('Startup')
     $shortcut = Join-Path $startup "HeadphoneAHKWatcher.lnk"

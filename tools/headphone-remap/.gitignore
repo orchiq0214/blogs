@@ -12,7 +12,8 @@ watcher_log.txt
 headphone_log.txt
 
 # AHK v2 extracted runtime (don't commit binaries, install separately)
-# But these DO live in C:\Users\1\Tools\AutoHotkey\ - not in this repo
+# These live in the install dir (default: %LOCALAPPDATA%\Tools\AutoHotkey),
+# not in this repo
 AutoHotkey*.exe
 AutoHotkey.chm
 license.txt

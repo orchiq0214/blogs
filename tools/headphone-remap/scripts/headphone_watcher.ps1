@@ -4,9 +4,11 @@
 # Auto-starts via Task Scheduler on user logon (see setup below).
 # =========================================================================
 
-$LogFile   = "C:\Users\1\Tools\AutoHotkey\watcher_log.txt"
-$AhkExe    = "C:\Users\1\Tools\AutoHotkey\AutoHotkey64.exe"
-$AhkScript = "C:\Users\1\Tools\AutoHotkey\headphone_remap.ahk"
+# Paths relative to this script's directory (no user-specific hardcoding).
+$ScriptDir = $PSScriptRoot
+$LogFile   = Join-Path $ScriptDir "watcher_log.txt"
+$AhkExe    = Join-Path $ScriptDir "AutoHotkey64.exe"
+$AhkScript = Join-Path $ScriptDir "headphone_remap.ahk"
 
 function Write-Log([string]$msg) {
     Add-Content -Path $LogFile -Value "$(Get-Date -Format 'yyyy-MM-dd HH:mm:ss') $msg"
