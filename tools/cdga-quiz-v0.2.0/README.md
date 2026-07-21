@@ -15,10 +15,10 @@
 同步页已默认填好：
 
 - GitHub 用户名：`orchiq0214`
-- 仓库名：`cdga-quiz-data`
+- 仓库名：`data-portfolio-private`
 - 分支：`main`
-- 题库路径：`question-banks/CDGA100道模拟题.md`
-- 答题日志路径：`data/cdga-state.json`
+- 题库路径：`cdga-quiz/question-banks/CDGA100道模拟题.md`
+- 答题日志路径：`cdga-quiz/data/cdga-state.json`
 
 通常只需要粘贴 GitHub token，然后点“保存并连接”。
 

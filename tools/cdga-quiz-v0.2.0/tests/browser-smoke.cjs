@@ -67,10 +67,10 @@ async function runFlow(browser, viewport, label) {
   await page.locator("[data-view='sync']").click();
   await page.waitForSelector("#syncForm", { timeout: 10000 });
   assert.equal(await page.locator("#ownerInput").inputValue(), "orchiq0214");
-  assert.equal(await page.locator("#repoInput").inputValue(), "cdga-quiz-data");
+  assert.equal(await page.locator("#repoInput").inputValue(), "data-portfolio-private");
   assert.equal(await page.locator("#branchInput").inputValue(), "main");
-  assert.equal(await page.locator("#bankPathInput").inputValue(), "question-banks/CDGA100道模拟题.md");
-  assert.equal(await page.locator("#statePathInput").inputValue(), "data/cdga-state.json");
+  assert.equal(await page.locator("#bankPathInput").inputValue(), "cdga-quiz/question-banks/CDGA100道模拟题.md");
+  assert.equal(await page.locator("#statePathInput").inputValue(), "cdga-quiz/data/cdga-state.json");
   await page.locator("[data-view='dashboard']").click();
   await page.waitForSelector("#startForm", { timeout: 10000 });
 

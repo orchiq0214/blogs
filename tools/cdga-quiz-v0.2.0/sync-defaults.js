@@ -7,10 +7,10 @@
 })(typeof globalThis !== "undefined" ? globalThis : window, function buildSyncDefaults() {
   const DEFAULT_SYNC_CONFIG = {
     owner: "orchiq0214",
-    repo: "cdga-quiz-data",
+    repo: "data-portfolio-private",
     branch: "main",
-    questionBankPath: "question-banks/CDGA100道模拟题.md",
-    statePath: "data/cdga-state.json",
+    questionBankPath: "cdga-quiz/question-banks/CDGA100道模拟题.md",
+    statePath: "cdga-quiz/data/cdga-state.json",
     token: "",
     autoSync: true,
   };
