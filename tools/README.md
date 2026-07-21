@@ -13,6 +13,8 @@
 
 | 工具 | 一句话 | 入口 |
 |---|---|---|
+| [cdga-quiz](./cdga-quiz/) | CDGA 静态刷题工具 v0.1.0，保留旧版入口 | [README](./cdga-quiz/README.md) |
+| [cdga-quiz-v0.2.0](./cdga-quiz-v0.2.0/) | CDGA 刷题工具 v0.2.0：背题模式、答题卡错题标记、安卓 PWA | [README](./cdga-quiz-v0.2.0/README.md) |
 | [headphone-remap](./headphone-remap/) | 把 3.5mm 耳机 +/−/中键 重映射成 ↑/↓/Enter，插耳机自动生效 | [README](./headphone-remap/README.md) |
 
 ## 计划中的工具（占位）
