@@ -1,5 +1,6 @@
-const DEFAULT_BANK_PATH = "question-banks/CDGA100道模拟题.md";
-const DEFAULT_STATE_PATH = "data/cdga-state.json";
+const syncDefaults = window.CdgaSyncDefaults;
+const DEFAULT_BANK_PATH = syncDefaults.DEFAULT_SYNC_CONFIG.questionBankPath;
+const DEFAULT_STATE_PATH = syncDefaults.DEFAULT_SYNC_CONFIG.statePath;
 const LOCAL_CONFIG_KEY = "cdga_static_config_v1";
 const LOCAL_STATE_KEY = "cdga_static_state_v1";
 const LOCAL_BANK_KEY = "cdga_static_bank_markdown_v1";
@@ -36,31 +37,14 @@ function defaultState() {
 
 function loadConfig() {
   try {
-    return {
-      owner: "",
-      repo: "",
-      branch: "main",
-      questionBankPath: DEFAULT_BANK_PATH,
-      statePath: DEFAULT_STATE_PATH,
-      token: "",
-      autoSync: true,
-      ...JSON.parse(localStorage.getItem(LOCAL_CONFIG_KEY) || "{}"),
-    };
+    return syncDefaults.normalizeSyncConfig(JSON.parse(localStorage.getItem(LOCAL_CONFIG_KEY) || "{}"));
   } catch {
-    return {
-      owner: "",
-      repo: "",
-      branch: "main",
-      questionBankPath: DEFAULT_BANK_PATH,
-      statePath: DEFAULT_STATE_PATH,
-      token: "",
-      autoSync: true,
-    };
+    return syncDefaults.normalizeSyncConfig();
   }
 }
 
 function saveConfig(config) {
-  appState.config = { ...appState.config, ...config };
+  appState.config = syncDefaults.normalizeSyncConfig({ ...appState.config, ...config });
   localStorage.setItem(LOCAL_CONFIG_KEY, JSON.stringify(appState.config));
 }
 
@@ -1004,18 +988,18 @@ function renderSync() {
         <div class="panel-header">
           <div>
             <h1 class="section-title">GitHub 同步</h1>
-            <div class="subtle">题库和答题日志放在你的仓库里，网页只负责读写。</div>
+            <div class="subtle">仓库和路径已按默认方案填好；通常只需要粘贴 GitHub token。</div>
           </div>
         </div>
         <div class="panel-body">
           <form class="form-grid" id="syncForm">
             <div class="field">
               <label for="ownerInput">GitHub 用户名</label>
-              <input class="input" id="ownerInput" name="owner" value="${escapeHtml(config.owner)}" placeholder="orchiq0214" />
+              <input class="input" id="ownerInput" name="owner" value="${escapeHtml(config.owner)}" />
             </div>
             <div class="field">
               <label for="repoInput">仓库名</label>
-              <input class="input" id="repoInput" name="repo" value="${escapeHtml(config.repo)}" placeholder="cdga-quiz-data" />
+              <input class="input" id="repoInput" name="repo" value="${escapeHtml(config.repo)}" />
             </div>
             <div class="field">
               <label for="branchInput">分支</label>
