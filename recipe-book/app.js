@@ -5,6 +5,7 @@ const TAG_USE_KEY = "recipe_book_tag_use_v1";
 
 const state = { view: "recipes", recipes: [], cart: loadJson(CART_KEY, {}), activeTag: "", query: "", editingId: null, config: loadJson(CONFIG_KEY, { owner: "orchiq0214", repo: "blogs", branch: "main", token: "" }) };
 const app = document.querySelector("#app");
+state.recipeOrder = [];
 
 function loadJson(key, fallback) { try { return { ...fallback, ...JSON.parse(localStorage.getItem(key) || "{}") }; } catch { return fallback; } }
 function save(key, value) { localStorage.setItem(key, JSON.stringify(value)); }
@@ -18,6 +19,7 @@ function orderedTags() { const used = loadJson(TAG_USE_KEY, {}); return allTags(
 function useTag(tag) { if (!tag) return; const used = loadJson(TAG_USE_KEY, {}); used[tag] = (used[tag] || 0) + 1; save(TAG_USE_KEY, used); }
 function recipeMatches(recipe) { const needle = state.query.trim().toLowerCase(); return (!state.activeTag || recipe.tags.includes(state.activeTag)) && (!needle || [recipe.name, ...recipe.tags, ...recipe.ingredients.map((item) => item.name)].join(" ").toLowerCase().includes(needle)); }
 function formatIngredients(recipe, servings = 1) { return RecipeCore.scaleIngredients(recipe, servings).map((item) => `${item.name} ${numberText(item.amount)}${item.unit}`).join("、"); }
+function orderedRecipes(recipes) { const positions = new Map(state.recipeOrder.map((id, index) => [id, index])); return [...recipes].sort((left, right) => (positions.get(left.id) ?? Number.MAX_SAFE_INTEGER) - (positions.get(right.id) ?? Number.MAX_SAFE_INTEGER)); }
 
 function updateChrome() { document.querySelector("#recipeCount").textContent = `${state.recipes.length} 道菜`; document.querySelector("#cartBadge").textContent = cartSize(); document.querySelectorAll(".nav-item").forEach((node) => node.classList.toggle("active", node.dataset.view === state.view)); }
 function renderRecipes() {
@@ -43,4 +45,33 @@ async function syncToGithub() { if (!state.config.token) throw new Error("请先
 document.addEventListener("click", async (event) => { const target = event.target.closest("[data-action], [data-view], [data-view-jump], [data-tag]"); if (!target) return; if (target.dataset.view || target.dataset.viewJump) { state.view = target.dataset.view || target.dataset.viewJump; state.editingId = null; render(); return; } if (target.dataset.tag !== undefined) { state.activeTag = target.dataset.tag; useTag(state.activeTag); render(); return; } const id = target.dataset.id; if (target.dataset.action === "add") { state.cart[id] = (state.cart[id] || 0) + 1; save(CART_KEY, state.cart); render(); } if (target.dataset.action === "decrease") { state.cart[id] -= 1; if (!state.cart[id]) delete state.cart[id]; save(CART_KEY, state.cart); render(); } if (target.dataset.action === "edit") { state.editingId = id; state.view = "editor"; render(); } if (target.dataset.action === "new-recipe") { state.editingId = null; render(); } if (target.dataset.action === "add-ingredient") document.querySelector("#ingredientRows").insertAdjacentHTML("beforeend", ingredientRow()); if (target.dataset.action === "remove-ingredient") target.closest(".ingredient-row").remove(); if (target.dataset.action === "open-settings") renderSettings(); if (target.dataset.action === "close-settings") document.querySelector("#settingsModal")?.remove(); if (target.dataset.action === "copy") { const text = RecipeCore.buildShoppingList(state.recipes, state.cart).map((item) => `${item.name} ${numberText(item.amount)}${item.unit}`).join("\n"); await navigator.clipboard.writeText(text); toast("采购清单已复制"); } if (target.dataset.action === "save-github") { const form = document.querySelector("#recipeForm"); if (!form.reportValidity()) return; const recipe = recipeFromForm(form); commitRecipe(recipe); try { await syncToGithub(); toast("已保存并同步到 GitHub"); } catch (error) { toast(error.message); } render(); } });
 document.addEventListener("input", (event) => { if (event.target.id === "search") { state.query = event.target.value; renderRecipes(); } });
 document.addEventListener("submit", (event) => { event.preventDefault(); if (event.target.id === "recipeForm") { const recipe = recipeFromForm(event.target); commitRecipe(recipe); toast("已保存到本机，可在设置中同步到 GitHub"); render(); } if (event.target.id === "settingsForm") { state.config = Object.fromEntries(new FormData(event.target)); save(CONFIG_KEY, state.config); document.querySelector("#settingsModal")?.remove(); toast("同步设置已保存"); } });
+
+function renderRecipes() {
+  const visible = orderedRecipes(state.recipes.filter(recipeMatches));
+  app.innerHTML = `<input class="search" id="search" value="${escapeHtml(state.query)}" placeholder="搜菜名、食材或标签" />
+    <div class="tag-row"><button class="tag ${state.activeTag ? "" : "active"}" data-tag="">全部</button>${orderedTags().map((tag) => `<button class="tag ${tag === state.activeTag ? "active" : ""}" data-tag="${escapeHtml(tag)}">${escapeHtml(tag)}</button>`).join("")}</div>
+    <div class="section-line"><span>${state.activeTag || state.query ? `找到 ${visible.length} 道` : "从今天想吃的开始选"}</span><button class="refresh-button" data-action="shuffle-recipes">换一批 ↻</button></div>
+    <section class="recipe-list">${visible.length ? visible.map(renderRecipe).join("") : `<div class="empty">没有找到这道菜</div>`}</section>`;
+}
+
+function renderCart() {
+  const selected = state.recipes.filter((recipe) => state.cart[recipe.id]);
+  const shopping = RecipeCore.buildShoppingList(state.recipes, state.cart);
+  app.innerHTML = selected.length ? `<section class="panel"><div class="panel-heading"><h2>这次要做</h2><button class="delete" data-action="clear-cart">一键清空</button></div>${selected.map((recipe) => `<div class="cart-row"><div><strong>${escapeHtml(recipe.name)}</strong><div class="ingredients">${escapeHtml(formatIngredients(recipe, state.cart[recipe.id]))}</div></div><div class="qty"><button data-action="decrease" data-id="${recipe.id}" aria-label="减少一份">−</button><b>${state.cart[recipe.id]} 份</b><button data-action="add" data-id="${recipe.id}" aria-label="增加一份">＋</button></div></div>`).join("")}</section><section class="shopping-list"><h2>采购清单</h2><ul>${shopping.map((item) => `<li>${escapeHtml(item.name)} ${numberText(item.amount)}${escapeHtml(item.unit)}</li>`).join("")}</ul><p class="ingredients">调料不计量，也不会加入采购单。</p><button class="secondary" data-action="copy">复制清单</button></section>` : `<div class="empty">还没有选菜<br><br><button class="primary" data-view-jump="recipes">去选菜</button></div>`;
+}
+
+document.addEventListener("click", (event) => {
+  const target = event.target.closest("[data-action]");
+  if (!target) return;
+  if (target.dataset.action === "shuffle-recipes") {
+    state.recipeOrder = RecipeCore.shuffleItems(state.recipes.filter(recipeMatches).map((recipe) => recipe.id));
+    renderRecipes();
+  }
+  if (target.dataset.action === "clear-cart") {
+    state.cart = RecipeCore.clearCart();
+    save(CART_KEY, state.cart);
+    toast("采购单已清空");
+    render();
+  }
+});
 (async function boot() { const cached = localStorage.getItem("recipe_book_recipes_v1"); try { state.recipes = cached ? JSON.parse(cached) : await (await fetch(DATA_PATH)).json(); } catch { state.recipes = cached ? JSON.parse(cached) : []; } render(); })();

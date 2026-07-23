@@ -35,5 +35,18 @@
     return [...new Set([...(existing || []), ...(additions || [])].map((item) => String(item).trim()).filter(Boolean))];
   }
 
-  return { buildShoppingList, mergeTags, scaleIngredients };
+  function shuffleItems(items, random = Math.random) {
+    const shuffled = [...(items || [])];
+    for (let index = shuffled.length - 1; index > 0; index -= 1) {
+      const swapIndex = Math.floor(random() * (index + 1));
+      [shuffled[index], shuffled[swapIndex]] = [shuffled[swapIndex], shuffled[index]];
+    }
+    return shuffled;
+  }
+
+  function clearCart() {
+    return {};
+  }
+
+  return { buildShoppingList, clearCart, mergeTags, scaleIngredients, shuffleItems };
 });
