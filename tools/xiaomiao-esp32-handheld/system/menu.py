@@ -191,6 +191,8 @@ def menu(title, items):
             items[sel][1]()
             init()
             return
+        elif k == 'B':
+            return
 
 def run_file(path):
     fb.fill(C0); ref()
@@ -345,14 +347,14 @@ def main_menu():
             icon(fb, x+27, y+6, ico, C5 if (sx==sel_x and sy==sel_y) else C6)
             tx = x + (75 - len(name)*8) // 2
             fb.text(name, tx, y+36, C1 if (sx==sel_x and sy==sel_y) else C6)
-        fb.text('A=enter  B=back', 4, 118, C6)
+        fb.text('A=enter', 56, 118, C6)
         ref()
         k = key()
         if k == 'U' and sel_y > 0: sel_y -= 1
         elif k == 'D' and sel_y < 1: sel_y += 1
         elif k == 'L' and sel_x > 0: sel_x -= 1
         elif k == 'R' and sel_x < 1: sel_x += 1
-        elif k == 'A':
+        elif k == 'A' or k == 'B':
             init()
             mm[sel_y*2 + sel_x][1]()
             init()
