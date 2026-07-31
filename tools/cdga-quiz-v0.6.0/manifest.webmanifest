@@ -1,0 +1,19 @@
+{
+  "name": "CDGA 速通刷题",
+  "short_name": "CDGA刷题",
+  "description": "个人 CDGA 背题、考试和错题复盘工具",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f6f5f2",
+  "theme_color": "#13795b",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "./assets/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
